@@ -19,9 +19,9 @@ public class PT_CyclicCodeRunner implements Database.Batchable<User>, Database.A
         return [SELECT Id FROM User WHERE Id =: UserInfo.getUserId()];
     }
 
-    public static void run(Type actionType, Integer delay) {
+    public static void run(Type commandType, Integer delay) {
         System.scheduleBatch(
-                new PT_CyclicCodeRunner(actionType, delay),
-                actionType.getName() + ' ' + Datetime.now().addMinutes(delay), delay);
+                new PT_CyclicCodeRunner(commandType, delay),
+                commandType.getName() + ' ' + Datetime.now().addMinutes(delay), delay);
     }
 }
