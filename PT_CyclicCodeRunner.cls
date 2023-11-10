@@ -12,7 +12,14 @@ public class PT_CyclicCodeRunner implements Database.Batchable<User>, Database.A
     }
 
     public void finish(Database.BatchableContext context) {
-        run(this.commandType, this.delay);
+        System.scheduleBatch(
+                new PT_CyclicCodeRunner(commandType, delay),
+                getName(Datetime.now().addMinutes(delay)), delay);
+    }
+
+    private String getName(Datetime nextRunAt) {
+        return commandType.getName() + ' ' + (
+                Test.isRunningTest() ? String.valueOf(nextRunAt.getTime()) : String.valueOf(nextRunAt));
     }
 
     public List<User> start(Database.BatchableContext context) {
@@ -20,8 +27,6 @@ public class PT_CyclicCodeRunner implements Database.Batchable<User>, Database.A
     }
 
     public static void run(Type commandType, Integer delay) {
-        System.scheduleBatch(
-                new PT_CyclicCodeRunner(commandType, delay),
-                commandType.getName() + ' ' + Datetime.now().addMinutes(delay), delay);
+        Database.executeBatch(new PT_CyclicCodeRunner(commandType, delay));
     }
 }
